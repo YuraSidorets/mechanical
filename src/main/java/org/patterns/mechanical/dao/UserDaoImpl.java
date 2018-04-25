@@ -28,7 +28,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findOne(long userId) {
-        return items.stream().filter(r -> r.getId().equals(userId))
+        return items.stream().filter(r -> r.getId() == userId)
                 .findFirst()
                 .map(User::clone);
     }

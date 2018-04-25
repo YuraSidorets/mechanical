@@ -2,9 +2,9 @@ package org.patterns.mechanical.model;
 
 import java.time.LocalDateTime;
 
-public class RepairRequest implements Cloneable {
+public class RepairRequest implements Cloneable, Observable {
     private Integer id;
-    private int userId;
+    private Integer userId;
     private int mechanicId;
     private RequestState status;
     private LocalDateTime createdAt;
@@ -21,11 +21,11 @@ public class RepairRequest implements Cloneable {
         this.id = id;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
@@ -85,6 +85,8 @@ public class RepairRequest implements Cloneable {
         this.resolved = resolved;
     }
 
+    private Observer observer;
+
     @Override
     public RepairRequest clone() {
         try {
@@ -92,5 +94,20 @@ public class RepairRequest implements Cloneable {
         } catch (CloneNotSupportedException ex) {
             throw new AssertionError("Class support cloning");
         }
+    }
+
+    @Override
+    public void registerObserver(Observer o) {
+        observer = o;
+    }
+
+    @Override
+    public void removeObserver(Observer o) {
+        observer = null;
+    }
+
+    @Override
+    public void notifyObserver() {
+        observer.changeState(this);
     }
 }

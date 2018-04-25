@@ -1,14 +1,11 @@
 package org.patterns.mechanical;
 
 import org.patterns.mechanical.dao.RepairRequestDao;
-import org.patterns.mechanical.model.Credentials;
-import org.patterns.mechanical.model.RepairRequest;
-import org.patterns.mechanical.model.RequestState;
-import org.patterns.mechanical.model.User;
+import org.patterns.mechanical.model.*;
 import org.patterns.mechanical.service.LoginService;
 import org.patterns.mechanical.service.RepairRequestProcessor;
-import org.patterns.mechanical.service.pipeline.Middleware;
-import org.patterns.mechanical.service.pipeline.RepairRequestPipeline;
+//import org.patterns.mechanical.service.pipeline.Middleware;
+//import org.patterns.mechanical.service.pipeline.RepairRequestPipeline;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,13 +21,13 @@ import java.util.stream.Collectors;
 public class MainController {
     private LoginService loginService;
     private RepairRequestDao repairRequestDao;
-    private RepairRequestPipeline requestPipeline;
+    private Observer repairRequsetObserver;
 
     public MainController(LoginService loginService, RepairRequestDao repairRequestDao,
-                          RepairRequestPipeline requestPipeline) {
+                          Observer repairRequestObserver) {
         this.loginService = loginService;
         this.repairRequestDao = repairRequestDao;
-        this.requestPipeline = requestPipeline;
+        this.repairRequsetObserver = repairRequestObserver;
     }
 
     private String homePage(User user) {
@@ -92,11 +89,8 @@ public class MainController {
         LocalDateTime now = LocalDateTime.now();
         repairRequest.setCreatedAt(now);
         repairRequest.setUpdatedAt(now);
-        repairRequestDao.save(repairRequest);
-
-        Middleware start = requestPipeline.construct(repairRequest);
-        start.check(user, repairRequest);
-        repairRequestDao.save(repairRequest);
+        repairRequest.registerObserver(repairRequsetObserver);
+        repairRequest.notifyObserver();
 
         return "redirect:/";
     }
@@ -160,10 +154,10 @@ public class MainController {
         if (repairRequest.getUserId() != principal.getId()) {
             throw new IllegalArgumentException("Invalid user id");
         }
+
         repairRequest.setResolved(false);
-        Middleware start = requestPipeline.construct(repairRequest);
-        start.check(principal, repairRequest);
-        repairRequestDao.save(repairRequest);
+        repairRequest.registerObserver(repairRequsetObserver);
+        repairRequest.notifyObserver();
         return "redirect:/";
     }
 }
