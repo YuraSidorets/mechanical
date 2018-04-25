@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Main Page</title>
+    <style>
+        #request-history, form {
+            margin: 10px auto;
+        }
+
+        #logout > button {
+            display: block;
+        }
+
+        #request-history, #request-history th, #request-history td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h1 {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .form-group > * {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<h1>Active requests</h1>
+<table id="request-history">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Problem</th>
+        <td>Answer</td>
+        <th>Status</th>
+        <th>Created</th>
+        <th>Updated</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="req: ${requests}">
+        <td th:text="${req.id}"></td>
+        <td th:text="${req.problem}"></td>
+        <td th:text="${req.response}"></td>
+        <td th:text="${req.status}"></td>
+        <td th:text="${req.createdAt}"></td>
+        <td th:text="${req.updatedAt}"></td>
+        <td th:if="${req.resolved && req.status.name() != 'SUPPORT'}" >
+            <form th:action="@{/next}" method="post">
+                <input type="hidden" name="id" th:value="${req.id}" />
+                <button>Next</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h1>New repair request</h1>
+<form method="post" th:action="@{/request}"
+        th:object="${request}">
+    <div class="form-group">
+        <label for="problem">Problem</label>
+        <textarea rows="4" cols="50" id="problem" th:field="*{problem}"></textarea>
+    </div>
+    <button>Create</button>
+</form>
+
+<form id="logout" method="post" th:action="@{/logout}">
+    <button>Log Out</button>
+</form>
+
+</body>
+</html>

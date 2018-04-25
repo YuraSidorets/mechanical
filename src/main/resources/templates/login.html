@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+        .errors {
+            color: red;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .form-group > * {
+            display: block;
+            padding: 5px;
+        }
+
+        #btn-login {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+<form method="post" th:action="@{/login}"
+      th:object="${credentials}">
+    <ul class="errors"  th:if="${#fields.hasErrors('global')}">
+        <li th:each="err: ${#fields.globalErrors()}" th:text="${err}"></li>
+    </ul>
+
+    <div class="form-group">
+        <label for="login">Login</label>
+        <input type="text" id="login" placeholder="Login"
+               th:field="*{login}"/>
+    </div>
+    <div class="form-group">
+        <label for="login">Password</label>
+        <input type="password" id="password" placeholder="Password"
+               th:field="*{password}"/>
+    </div>
+    <button id="btn-login">Log In</button>
+</form>
+</body>
+</html>
