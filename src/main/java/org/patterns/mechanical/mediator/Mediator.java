@@ -1,14 +1,7 @@
 package org.patterns.mechanical.mediator;
+import org.patterns.mechanical.model.RepairRequest;
 
 public interface Mediator {
-
-    void deleteNote();
-
-    void saveChanges();
-    void markNote();
-    void clear();
-
     void registerComponent(Component component);
-    void hideElements(boolean flag);
-    void createGUI();
+    Boolean send(RepairRequest request, Component component);
 }

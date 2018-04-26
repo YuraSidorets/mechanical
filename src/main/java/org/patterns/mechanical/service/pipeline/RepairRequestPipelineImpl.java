@@ -1,5 +1,6 @@
 package org.patterns.mechanical.service.pipeline;
 
+import org.patterns.mechanical.mediator.*;
 import org.patterns.mechanical.model.RepairRequest;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +9,12 @@ public class RepairRequestPipelineImpl implements RepairRequestPipeline {
     @Override
     public Middleware construct(RepairRequest repairRequest) {
         Middleware start;
+
+        Mediator inspector = new Inspector();
+        inspector.registerComponent(new AutonomousReplyComponent());
+        inspector.registerComponent(new CallCenterComponent());
+        inspector.registerComponent(new SupportComponent());
+
         switch (repairRequest.getStatus()) {
             case PROCESSING:
                 start = new AutonomousReplyMiddleware();
