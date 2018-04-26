@@ -37,8 +37,9 @@ public class Inspector implements Mediator {
 
         }
         else if (component == callCenter){
+            request.setStatus(RequestState.CALL_CENTER);
+            request.setResponse("Requires call center agent contact");
             if (callCenter.getCallReply(request)){
-                request.setResponse("Requires call center agent contact");
                 return true;
             }
             else {
@@ -46,9 +47,9 @@ public class Inspector implements Mediator {
             }
         }
         else if (component == support){
-            if (support.getSupport(request)){
-                request.setStatus(RequestState.SUPPORT);
-                request.setResponse("Requires support agent contact");
+            request.setStatus(RequestState.SUPPORT);
+            request.setResponse("Requires support agent contact");
+            if (support.getSupport(request)){               
                 return true;
             }else {
                 return false;
