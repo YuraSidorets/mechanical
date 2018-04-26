@@ -11,22 +11,31 @@ public class RepairRequestPipelineImpl implements RepairRequestPipeline {
         Middleware start;
 
         Mediator inspector = new Inspector();
-        inspector.registerComponent(new AutonomousReplyComponent());
-        inspector.registerComponent(new CallCenterComponent());
-        inspector.registerComponent(new SupportComponent());
+        AutonomousReplyComponent autonomousReply = new AutonomousReplyComponent();
+        CallCenterComponent callCenter = new CallCenterComponent();
+        SupportComponent supportComponent = new SupportComponent();
+
+        autonomousReply.setMediator(inspector);
+        callCenter.setMediator(inspector);
+        supportComponent.setMediator(inspector);
+
+        inspector.registerComponent(autonomousReply);
+        inspector.registerComponent(callCenter);
+        inspector.registerComponent(supportComponent);
+
 
         switch (repairRequest.getStatus()) {
             case PROCESSING:
-                start = new AutonomousReplyMiddleware();
-                start.linkWith(new CallCenterMiddleware())
-                        .linkWith(new SupportMiddleware());
+                start = new AutonomousReplyMiddleware(autonomousReply);
+                start.linkWith(new CallCenterMiddleware(callCenter))
+                        .linkWith(new SupportMiddleware(supportComponent));
                 break;
             case AUTO_REPLIED:
-                start = new CallCenterMiddleware();
-                start.linkWith(new SupportMiddleware());
+                start = new CallCenterMiddleware(callCenter);
+                start.linkWith(new SupportMiddleware(supportComponent));
                 break;
             case CALL_CENTER:
-                start = new SupportMiddleware();
+                start = new SupportMiddleware(supportComponent);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid request state");

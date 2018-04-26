@@ -7,9 +7,15 @@ import org.patterns.mechanical.model.User;
 import org.patterns.mechanical.service.RepairRequestProcessor;
 
 public class SupportMiddleware extends Middleware {
+	private SupportComponent supportComponent;
+
+	public SupportMiddleware(SupportComponent supportComponent){
+		this.supportComponent = supportComponent;
+	}
+
     @Override
     public boolean check(User user, RepairRequest request) {
-        if (!new SupportComponent().fireAction(request)) {
+        if (!supportComponent.fireAction(request)) {
             return checkNext(user, request);
         }
         else {
